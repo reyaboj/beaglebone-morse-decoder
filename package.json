@@ -1,0 +1,22 @@
+{
+  "name": "assignment-5-team79-1",
+  "version": "1.0.0",
+  "description": "Morse code decoder for use on the Beaglebone Black",
+  "main": "src/server.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FIT3140-S1-2017/assignment-5-team79-1.git"
+  },
+  "author": "Jobayer & CS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FIT3140-S1-2017/assignment-5-team79-1/issues"
+  },
+  "homepage": "https://github.com/FIT3140-S1-2017/assignment-5-team79-1#readme"
+}
