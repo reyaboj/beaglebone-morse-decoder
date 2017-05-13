@@ -13,10 +13,25 @@
     "type": "git",
     "url": "git+https://github.com/FIT3140-S1-2017/assignment-5-team79-1.git"
   },
-  "author": "Jobayer & CS",
+  "contributors": [
+    {
+      "name": "Md Istiaque Al Jobayer",
+      "email": "mial2@student.monash.edu"
+    },
+    {
+      "name": "Chan Chuan Sheng",
+      "email": "cscha37@student.monash.edu"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/FIT3140-S1-2017/assignment-5-team79-1/issues"
   },
-  "homepage": "https://github.com/FIT3140-S1-2017/assignment-5-team79-1#readme"
+  "homepage": "https://github.com/FIT3140-S1-2017/assignment-5-team79-1#readme",
+  "dependencies": {
+    "beaglebone-io": "^2.0.0",
+    "firebase": "^3.9.0",
+    "firebase-admin": "^4.2.1",
+    "johnny-five": "^0.10.13"
+  }
 }
