@@ -28,5 +28,14 @@ describe('util', function() {
                 )
             );
         });
+
+        it('should convert \"AB Z\" to 10111000111010101000000011101110101', function () {
+            assert(
+                _.isEqual(
+                    util.msgToSignals('AB Z'),
+                    [1,0,1,1,1,0,0,0,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,1,1,0,1,1,1,0,1,0,1]
+                )
+            );
+        });
     });
 });

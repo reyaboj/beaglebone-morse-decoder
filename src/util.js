@@ -117,14 +117,14 @@ function msgToSignals(msg) {
         if (msg[i] == ' ') {
             for (var j = 0; j < WORD_GAP; j++)
                 signals.push(LOW);
-            return;
+            continue;
         }
 
         const code = morseReverse[msg[i]];
         for (var signal of codeToSignals(code))
             signals.push(signal);
 
-        if (i !== msg.length-1)
+        if (i !== msg.length-1 && msg[i+1] != ' ')
             for (var j = 0; j < LETTER_GAP; j++)
                 signals.push(LOW);
     }
