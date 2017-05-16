@@ -74,6 +74,10 @@ for (var pat in morse) {
 }
 exports.morseReverse = morseReverse;
 
+/*Unknown Character to use for failed lookups*/
+const UNKNOWN = String.fromCodePoint(0xfffd);
+exports.UNKNOWN = UNKNOWN;
+
 
 /**
    Convert a given code to its corresponding signal sequence.

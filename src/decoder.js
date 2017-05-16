@@ -31,18 +31,20 @@ const LONG_MOTION  = morseUtil.LONG_MOTION;
 const SHORT_MOTION = morseUtil.SHORT_MOTION;
 
 /*Unknown Character to use for failed lookups*/
-const UNKNOWN = String.fromCodePoint(0xfffd);
+const UNKNOWN = morseUtil.UNKNOWN;
 
 
 /**
    Construct a decoder with initial state.
    @constructor
  */
-function Decoder() {
+function Decoder(motionCallback, letterCallback) {
     this.streak = null;  // either 0/1 to indicate LOW/HIGH streaks
     this.count  = 0;     // length of the current streak
     this.motions = [];   // motions for the current to-be-converted code
     this.message = [];   // message encoded so far
+    this.motionCallback = motionCallback;  // called when a new motion is classified
+    this.letterCallback = letterCallback;  // called when a new letter is added to msg
 }
 
 
@@ -64,13 +66,12 @@ Decoder.prototype.processSignal = function(signal) {
         this.count += 1;
     } else if (this.streak === HIGH) {
         if (signal === LOW) {
-            if (this.count >= LONG_MOTION_LEN)
-                this.motions.push(LONG_MOTION);
-            else
-                this.motions.push(SHORT_MOTION);
-
+            const motion = this.count >= LONG_MOTION_LEN? LONG_MOTION : SHORT_MOTION;
+            this.motions.push(motion);
             this.streak = LOW;
             this.count = 1;
+
+            this.motionCallback(motion);
         } else {
             this.count += 1;
         }
@@ -79,15 +80,18 @@ Decoder.prototype.processSignal = function(signal) {
             if (this.count < LETTER_GAP) {
                 this.count = 1;
                 this.streak = HIGH;
-                return;
+                return this;
             }
 
             const char = morse[this.motions.join('')];
-            this.message.push(char? char: UNKNOWN);
+            const pushChar = char? char : UNKNOWN;
+            this.message.push(pushChar);
             this.motions = [];
+            this.letterCallback(pushChar);
 
             if (this.count >= WORD_GAP) {
                 this.message.push(' ');
+                this.letterCallback(' ');
             }
 
             this.count = 1;
@@ -107,22 +111,29 @@ Decoder.prototype.processSignal = function(signal) {
    more signals.
  */
 Decoder.prototype.gracefulFinalizeState = function() {
-    if (this.streak === HIGH) {
-        if (this.count >= LONG_MOTION_LEN) {
-            this.motions.push(LONG_MOTION);
-        } else {
-            this.motions.push(SHORT_MOTION);
-        }
+    if (this.motions.length === 0)
+        return this;
 
-        this.message.push(morse[this.motions.join('')]);
+    if (this.streak === HIGH) {
+        const motion = this.count >= LONG_MOTION_LEN? LONG_MOTION : SHORT_MOTION;
+        this.motions.push(motion);
+        this.motionCallback(motion);
+
+        const char = morse[this.motions.join('')];
+        const pushChar = char? char : UNKNOWN;
+        this.message.push(pushChar);
+        this.letterCallback(pushChar);
     } else if (this.streak === LOW) {
         if (this.count >= LETTER_GAP) {
             const char = morse[this.motions.join('')];
-            this.message.push(char? char: UNKNOWN);
+            const pushChar = char? char : UNKNOWN;
+            this.message.push(pushChar);
+            this.letterCallback(pushChar);
         }
 
         if (this.count >= WORD_GAP) {
             this.message.push(' ');
+            this.letterCallback(' ');
         }
     }
 
