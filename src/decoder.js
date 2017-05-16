@@ -43,8 +43,8 @@ function Decoder(motionCallback, letterCallback) {
     this.count  = 0;     // length of the current streak
     this.motions = [];   // motions for the current to-be-converted code
     this.message = [];   // message encoded so far
-    this.motionCallback = motionCallback;  // called when a new motion is classified
-    this.letterCallback = letterCallback;  // called when a new letter is added to msg
+    this.motionCallback = motionCallback || () => {};  // called when a new motion is classified
+    this.letterCallback = letterCallback || () => {};  // called when a new letter is added to msg
 }
 
 

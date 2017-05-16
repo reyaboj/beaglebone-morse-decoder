@@ -112,7 +112,8 @@ exports.codeToSignals = codeToSignals;
 /**
    Convert a message to its corresponding signal sequence.
 
-   @
+   @param {string} msg the message to convert
+   @returns {Array} the signal sequence for this message
  */
 function msgToSignals(msg) {
     var signals = [];
@@ -129,7 +130,7 @@ function msgToSignals(msg) {
             signals.push(signal);
 
         if (i !== msg.length-1 && msg[i+1] != ' ')
-            for (var j = 0; j < LETTER_GAP; j++)
+            for (j = 0; j < LETTER_GAP; j++)
                 signals.push(LOW);
     }
 
