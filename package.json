@@ -32,7 +32,8 @@
     "beaglebone-io": "^2.0.0",
     "firebase": "^3.9.0",
     "firebase-admin": "^4.2.1",
-    "johnny-five": "^0.10.13"
+    "johnny-five": "^0.10.13",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "mocha": "^3.3.0"

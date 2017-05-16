@@ -3,58 +3,35 @@
 
    Morse code decoder.
  */
+'use strict';
 
-/*Morse code lookup table*/
-const morse = {
-    'SL':   'A',
-    'LSSS': 'B',
-    'LSLS': 'C',
-    'LSS':  'D',
-    'S':    'E',
-    'SSLS': 'F',
-    'LLS':  'G',
-    'SSSS': 'H',
-    'SS':   'I',
-    'SLLL': 'J',
-    'LSL':  'K',
-    'SLSS': 'L',
-    'LL':   'M',
-    'LS':   'N',
-    'LLL':  'O',
-    'SLLS': 'P',
-    'LLSL': 'Q',
-    'SLS':  'R',
-    'SSS':  'S',
-    'L':    'T',
-    'SSL':  'U',
-    'SSSL': 'V',
-    'SLL':  'W',
-    'LSSL': 'X',
-    'LSLL': 'Y',
-    'LLSS': 'Z'
-};
+const morseUtil = require('./util');
 
-const morseReverse = {};
-for (pat in morse) {
-    if (pat !== undefined)
-        morseReverse[morse[pat]] = pat;
-}
+
+/*Morse code lookup table: code -> letter*/
+const morse = morseUtil.morse;
+
+/*Morse code reverse lookup table: letter -> code*/
+const morseReverse = morseUtil.morseReverse;
 
 /*Gap widths for the signal stream*/
-const SMALL_GAP  = 1;
-const LETTER_GAP = 3;
-const WORD_GAP   = 7;
+const SMALL_GAP  = morseUtil.SMALL_GAP;
+const LETTER_GAP = morseUtil.LETTER_GAP;
+const WORD_GAP   = morseUtil.WORD_GAP;
 
 /*Signals*/
-const HIGH = 1;
-const LOW  = 0;
+const HIGH = morseUtil.HIGH;
+const LOW  = morseUtil.LOW;
 
-/*Motion threshold*/
-const LONG_MOTION_LEN = 3;
+/*Motion lengths*/
+const LONG_MOTION_LEN = morseUtil.LONG_MOTION_LEN;
 
 /*Motions*/
-const LONG_MOTION  = 'L';
-const SHORT_MOTION = 'S';
+const LONG_MOTION  = morseUtil.LONG_MOTION;
+const SHORT_MOTION = morseUtil.SHORT_MOTION;
+
+/*Unknown Character to use for failed lookups*/
+const UNKNOWN = String.fromCodePoint(0xfffd);
 
 
 /**
@@ -71,9 +48,13 @@ function Decoder() {
 
 /**
    Update decoder state using the received signal. Signals are assumed to come in at
-   a steady interval. NOTE: this is an online process; the decoder will not commit to
-   a decision unless it has guarantee that a future signal wouldn't have altered the
-   decoded message.
+   a steady interval.
+
+   NOTE: this is an online process; the decoder will not commit to a decision unless it
+   has guarantee that a future signal wouldn't have forced a different choice for the
+   decoded letter. The limitation with this process is that the interface is awkward:
+   the client must call @{link gracefulFinalizeState} to force the process to decide
+   based on the current state, i.e. assuming the end of the signal stream.
 
    @param {number} signal 0 or 1 to indicate LOW/HIGH signals respectively
  */
@@ -101,7 +82,8 @@ Decoder.prototype.processSignal = function(signal) {
                 return;
             }
 
-            this.message.push(morse[this.motions.join('')]);
+            const char = morse[this.motions.join('')];
+            this.message.push(char? char: UNKNOWN);
             this.motions = [];
 
             if (this.count >= WORD_GAP) {
@@ -135,7 +117,8 @@ Decoder.prototype.gracefulFinalizeState = function() {
         this.message.push(morse[this.motions.join('')]);
     } else if (this.streak === LOW) {
         if (this.count >= LETTER_GAP) {
-            this.message.push(morse[this.motions.join('')]);
+            const char = morse[this.motions.join('')];
+            this.message.push(char? char: UNKNOWN);
         }
 
         if (this.count >= WORD_GAP) {
@@ -151,12 +134,13 @@ Decoder.prototype.gracefulFinalizeState = function() {
 
 
 /**
-   Decode signals offline rather than online.
+   Decode signals offline rather than online. Call @{link peekMessage} afterwards to
+   retrieve the decoded message.
 
    @param {Array} signals an array of signals (0s/1s)
  */
 Decoder.prototype.processSignalsOffline = function (signals) {
-    for (signal of signals) {
+    for (var signal of signals) {
         this.processSignal(signal);
     }
 
@@ -174,38 +158,4 @@ Decoder.prototype.peekMessage = function () {
     return this.message.join('');
 };
 
-
 exports.Decoder = Decoder;
-
-exports.msgToMorse = function (msg) {
-    result = [];
-
-    const letters = msg.split('');
-    for (letter of letters) {
-        if (letter === ' ') {
-            for (var i = 0; i < WORD_GAP; i++)
-                result.push(LOW);
-            continue;
-        }
-
-        var code = morseReverse[letter];
-        console.log(`${letter} ${code}`);
-
-        for (var i = 0; i < code.length; i++) {
-            if (code[i] === SHORT_MOTION) {
-                result.push(HIGH);
-            } else if (code[i] === LONG_MOTION) {
-                for (var j = 0; j < LONG_MOTION_LEN; j++) {
-                    result.push(HIGH);
-                }
-            }
-            if (i !== code.length-1)
-                result.push(LOW);
-        }
-
-        for (var i = 0; i < LETTER_GAP; i++)
-            result.push(LOW);
-    }
-
-    return result;
-};

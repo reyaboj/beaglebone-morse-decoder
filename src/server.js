@@ -12,6 +12,9 @@
 
 const five = require('johnny-five');
 const bbio = require('beaglebone-io');
+const dec  = require('./decoder');
+
+
 const beagle = new five.Board({
     io: new bbio(),
     repl: false
