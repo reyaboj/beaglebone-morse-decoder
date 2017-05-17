@@ -15,6 +15,64 @@ const bbio = require('beaglebone-io');
 const dec  = require('./decoder');
 
 
+function initDecoder(sensor) {
+    const fireadmin = require('firebase-admin');
+    const serviceAcc = require('./morsedecoder-key.json');
+
+    fireadmin.initializeApp({
+        credential: fireadmin.credential.cert(serviceAcc),
+        databaseURL: 'https://morsedecoder-fc3e1.firebaseio.com'
+    });
+
+    const firedb = fireadmin.database();
+    const dbRoot = firedb.ref();
+
+    dbRoot.set({
+        signal: null,
+        motion: null,
+        message: null
+    });
+
+    const dbSignal = dbRoot.child('signal');
+    const dbMotion = dbRoot.child('motion');
+    const dbMessage = dbRoot.child('message');
+
+
+    const decoder = new dec.Decoder(
+        (motion) => dbMotion.push(motion),
+        (letter) => dbMessage.push(letter)
+    );
+
+    function decoderPush(data) {
+        data = data.detectedMotion? 1 : 0;
+        dbSignal.push(data);
+        decoder.processSignal(data);
+        console.log(JSON.stringify(decoder, null, 2));
+    }
+
+    const iface = {
+        pushing: false,
+
+        off: function() {
+            if (!this.pushing)
+                return;
+
+            sensor.removeListener('data', decoderPush);
+            this.pushing = false;
+        },
+
+        on: function() {
+            if (this.pushing)
+                return;
+
+            sensor.on('data', decoderPush);
+            this.pushing = true;
+        }
+    };
+
+    return iface;
+}
+
 const beagle = new five.Board({
     io: new bbio(),
     repl: false
@@ -22,7 +80,7 @@ const beagle = new five.Board({
 
 beagle.on('ready', function () {
     const SENSOR_PIN = 'P8_8';  // PIR sensor output signal pin
-    const POLL_FREQ = 1000;  // polling frequency in milliseconds
+    const POLL_FREQ = 3000;  // polling frequency in milliseconds
 
     const sensor = new five.Motion({
         pin: SENSOR_PIN,
@@ -41,5 +99,7 @@ beagle.on('ready', function () {
                 `Timestamp{${data.timestamp}}  ${data.detectedMotion ? 'HIGH' : 'LOW'}`
             );
         });
+
+        initDecoder(sensor).on();
     });
 });
