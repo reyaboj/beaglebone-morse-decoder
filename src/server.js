@@ -10,10 +10,8 @@
        Listens to Firebase for updates and displays the decoded message to the user.
  */
 
-const five = require('johnny-five');
-const bbio = require('beaglebone-io');
-const dec  = require('./decoder');
 
+const dec  = require('./decoder');
 
 function initDecoder(sensor) {
     const fireadmin = require('firebase-admin');
@@ -72,34 +70,46 @@ function initDecoder(sensor) {
 
     return iface;
 }
+exports.initDecoder = initDecoder;
 
-const beagle = new five.Board({
-    io: new bbio(),
-    repl: false
-});
 
-beagle.on('ready', function () {
-    const SENSOR_PIN = 'P8_8';  // PIR sensor output signal pin
-    const POLL_FREQ = 3000;  // polling frequency in milliseconds
+function startServer() {
+    const five = require('johnny-five');
+    const bbio = require('beaglebone-io');
 
-    const sensor = new five.Motion({
-        pin: SENSOR_PIN,
-        freq: POLL_FREQ
+    const beagle = new five.Board({
+        io: new bbio(),
+        repl: false
     });
 
-    sensor.on('calibrated', function () {
-        console.log(
-            `[Calibrated]\n`
-                + `Pin = ${SENSOR_PIN}\n`
-                + `Polling Rate = every ${POLL_FREQ} msecs\n`
-        );
+    beagle.on('ready', function () {
+        const SENSOR_PIN = 'P8_8';  // PIR sensor output signal pin
+        const POLL_FREQ = 3000;  // polling frequency in milliseconds
 
-        sensor.on('data', function (data) {
-            console.log(
-                `Timestamp{${data.timestamp}}  ${data.detectedMotion ? 'HIGH' : 'LOW'}`
-            );
+        const sensor = new five.Motion({
+            pin: SENSOR_PIN,
+            freq: POLL_FREQ
         });
 
-        initDecoder(sensor).on();
+        sensor.on('calibrated', function () {
+            console.log(
+                `[Calibrated]\n`
+                    + `Pin = ${SENSOR_PIN}\n`
+                    + `Polling Rate = every ${POLL_FREQ} msecs\n`
+            );
+
+            sensor.on('data', function (data) {
+                console.log(
+                    `Timestamp{${data.timestamp}}  ${data.detectedMotion ? 'HIGH' : 'LOW'}`
+                );
+            });
+
+            initDecoder(sensor).on();
+        });
     });
-});
+}
+
+
+if (require.main === module) {  // run as a script; not required by another module
+    startServer();
+}
