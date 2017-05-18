@@ -25,7 +25,7 @@ The first is to test the decoder without a running Beaglebone black + Motion sen
 $ node src/mock_server.js 'MY MESSAGE IS HERE'
 ```
 
-You should be seeing some output on the console. To open the client, visit [morsedecoder-fc3e1.firebaseapp.com](https://morsedecoder-fce31.firebaseapp.com).
+You should be seeing some output on the console. To open the client, visit [morsedecoder-fc3e1.firebaseapp.com](https://morsedecoder-fc3e1.firebaseapp.com).
 
 Testing
 --------
