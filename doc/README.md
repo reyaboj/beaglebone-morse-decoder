@@ -25,6 +25,10 @@ The first is to test the decoder without a running Beaglebone black + Motion sen
 $ node src/mock_server.js 'MY MESSAGE IS HERE'
 ```
 
+NOTE: The firebase key is not in version control, so even if you follow the instructions above, this will not run.
+
+Both server modules look for the `morsedecoder-key.json`.
+
 You should be seeing some output on the console. To open the client, visit [morsedecoder-fc3e1.firebaseapp.com](https://morsedecoder-fc3e1.firebaseapp.com).
 
 Testing
