@@ -91,7 +91,7 @@ const morse = {
     'LSSSL': '=',
 
     // Prosign
-    'SSSLSL': '\0'
+    'SSSLSL': '\0'  // SK, end of transmission
 };
 exports.morse = morse;
 
