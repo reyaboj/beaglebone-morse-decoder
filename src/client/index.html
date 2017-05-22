@@ -7,8 +7,23 @@
         <script src="./client.js"></script>
     </head>
     <body>
-        <div id="signal" ></div>
-        <div id="motion" ></div>
-        <div id="message" ></div>
+        <div style="margin: auto; width:50%;">
+
+            <h1>Morse Code Decoder</h1>
+
+            <h2>Signal Stream</h2>
+            <p id="signal" style="overflow: scroll;"></p>
+
+            <h2>Motion Stream</h2>
+            <p id="motion" style="overflow: scroll;"></p>
+
+            <h2>Message Stream</h2>
+            <p id="message" style="overflow: scroll;"></p>
+
+            <div>
+                <input type="checkbox" id="listening" name="listening" >
+                <label for="listening" >Enabled?</label>
+            </div>
+        </div>
     </body>
 </html>
