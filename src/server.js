@@ -13,6 +13,12 @@
 
 const dec  = require('./decoder');
 
+/**
+   Get a decoder attached to a sensor.
+
+   @param {EventEmitter} sensor the sensor object
+   @returns {object} the interface to the decoder process with on/off methods
+*/
 function initDecoder(sensor) {
     const fireadmin = require('firebase-admin');
     const serviceAcc = require('./morsedecoder-key.json');
