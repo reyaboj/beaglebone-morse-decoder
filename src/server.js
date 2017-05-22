@@ -41,10 +41,16 @@ function initDecoder(sensor) {
     const dbMotion = dbRoot.child('motion');
     const dbMessage = dbRoot.child('message');
 
+    dbRoot.child('listening').set(true);
 
     const decoder = new dec.Decoder(
         (motion) => dbMotion.push(motion),
-        (letter) => dbMessage.push(letter)
+        (letter) => {
+            if (letter === '\0')
+                iface.off();
+            else
+                dbMessage.push(letter);
+        }
     );
 
     function decoderPush(data) {
@@ -73,6 +79,16 @@ function initDecoder(sensor) {
             this.pushing = true;
         }
     };
+
+    dbRoot.child('listening').on('value', function (snap) {
+        if (snap.val()) {
+            console.log('Listening...');
+            iface.on();
+        } else {
+            console.log('Stopping listening...');
+            iface.off();
+        }
+    });
 
     return iface;
 }
