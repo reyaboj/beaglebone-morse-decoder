@@ -46,8 +46,10 @@ function initDecoder(sensor) {
     const decoder = new dec.Decoder(
         (motion) => dbMotion.push(motion),
         (letter) => {
-            if (letter === '\0')
+            if (letter === '\0') {
                 iface.off();
+                dbRoot.child('listening').set(false);
+            }
             else
                 dbMessage.push(letter);
         }
