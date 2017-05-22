@@ -37,6 +37,7 @@ exports.WORD_GAP   = WORD_GAP;
 
 /*Morse code lookup table*/
 const morse = {
+    // Letters
     'SL':   'A',
     'LSSS': 'B',
     'LSLS': 'C',
@@ -62,7 +63,35 @@ const morse = {
     'SLL':  'W',
     'LSSL': 'X',
     'LSLL': 'Y',
-    'LLSS': 'Z'
+    'LLSS': 'Z',
+
+    // Numbers
+    'LLLLL': '0',
+    'SLLLL': '1',
+    'SSLLL': '2',
+    'SSSLL': '3',
+    'SSSSL': '4',
+    'SSSSS': '5',
+    'LSSSS': '6',
+    'LLSSS': '7',
+    'LLLSS': '8',
+    'LLLLS': '9',
+
+    // Punctuation
+    'SLSLSL': '.',
+    'LLSSLL': ',',
+    'LLLSSS': ':',
+    'SSLLSS': '?',
+    'SLLLLS': '\'',
+    'LSSSSL': '-',
+    'LSSLS': '/',
+    'LSLLSL': '(',
+    'SLSSLS': '\"',
+    'SLLSLS': '@',
+    'LSSSL': '=',
+
+    // Prosign
+    'SSSLSL': '\0'
 };
 exports.morse = morse;
 
